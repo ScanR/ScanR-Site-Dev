@@ -3,8 +3,8 @@ const latestContainer = document.querySelector('.latest-chapters');
 const seriesContainer = document.querySelector('.series-grid');
 
 // Helpers pour ajuster les URLs de cover
-const appendSeriesCover  = url => `${url}.256.jpg`;
-const appendChapterCover = url => `${url}.512.jpg`;
+const appendSeriesCover  = url => `${url.slice(0, -4)}-s.jpg`;
+const appendChapterCover = url => `${url.slice(0, -4)}-m.jpg`;
 function timeAgo(ms) {
   const diff = Date.now() - ms;
   const min = 60*1000, h = 60*min, d = 24*h, w = 7*d;
@@ -115,6 +115,8 @@ async function bootstrap() {
     const maxScrollLeft = track.scrollWidth - visibleWidth;
 
     nextBtn.addEventListener('click', () => {
+      const visibleWidth  = track.clientWidth;
+      const maxScrollLeft = track.scrollWidth - visibleWidth;
       if (track.scrollLeft >= maxScrollLeft) {
         track.scrollTo({ left: 0, behavior: 'smooth' });
       } else {
@@ -123,6 +125,8 @@ async function bootstrap() {
     });
 
     prevBtn.addEventListener('click', () => {
+      const visibleWidth  = track.clientWidth;
+      const maxScrollLeft = track.scrollWidth - visibleWidth;
       if (track.scrollLeft <= 0) {
         track.scrollTo({ left: maxScrollLeft, behavior: 'smooth' });
       } else {

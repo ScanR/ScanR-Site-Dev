@@ -9,7 +9,8 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=Urbanist:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
-
+	<!-- Favicon -->
+	<link rel="icon" type="image/png" href="img/favicon.png" />
 	<!-- Font Awesome -->
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" integrity="sha512-…" crossorigin="anonymous" referrerpolicy="no-referrer" />
 
@@ -70,16 +71,11 @@
 			align-items:center;
 			justify-content:space-between;
 		}
-		.logo{
-			font-size:1.7rem;
-			font-weight:800;
-			letter-spacing:.08em;
-			background:linear-gradient(90deg,var(--clr-primary),var(--clr-accent));
-			-webkit-background-clip:text;background-clip:text;
-			-webkit-text-fill-color:transparent;
-			transition:transform .3s ease;
+		.logo img {
+		display: block;
+		height: 1.7rem; /* pour correspondre à l’ancienne taille du texte */
+		width: auto;
 		}
-		.logo:hover{transform:scale(1.06)}
 		nav ul{display:flex;gap:2rem;list-style:none}
 		nav a{
 			text-decoration:none;
@@ -325,11 +321,17 @@
 <body>
   <header>
     <div class="header-container">
-      <div class="logo">ScanR</div>
+      <div class="logo">
+        <img src="img/scanr.webp" alt="ScanR Logo" />
+      </div>
       <nav>
         <ul>
           <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
-          <li><a href="#"><i class="fas fa-book"></i> Séries</a></li>
+		  <li>
+		  <a href="#series-section" id="nav-series-link">
+			  <i class="fas fa-book"></i> Séries
+		  </a>
+		  </li>
         </ul>
       </nav>
       <button id="theme-toggle" class="theme-toggle" aria-label="Changer de thème">
@@ -357,7 +359,7 @@
 
 
     <!-- =========================   SÉRIES   ========================= -->
-    <section>
+    <section id="series-section">
       <h2 class="section-title">Nos séries</h2>
       <div class="series-grid">
         <!-- Les cartes de séries seront injectées ici par app.js -->
