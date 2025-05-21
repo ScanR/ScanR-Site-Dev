@@ -1,0 +1,465 @@
+/* ==========   VARIABLES LIGHT / DARK   ========== */
+:root {
+  /* light */
+  --clr-bg: #f7f8fc;
+  --clr-bg-card: #ffffff;
+  --clr-text: #222831;
+  --clr-text-sub: #69707d;
+  --clr-primary: #745cf7;
+  --clr-accent: #ff6ba5;
+  --opacity-card: 0.85;
+}
+body.dark {
+  --clr-bg: #15171a;
+  --clr-bg-card: #1e2024;
+  --clr-text: #eceff4;
+  --clr-text-sub: #a6adba;
+  --clr-primary: #8f9aff;
+  --clr-accent: #ff7fb3;
+  --opacity-card: 1;
+}
+
+/* ==========   RESET + BASE   ========== */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+html {
+  scroll-behavior: smooth;
+}
+body {
+  font-family: "Urbanist", system-ui, sans-serif;
+  background: var(--clr-bg);
+  color: var(--clr-text);
+  overflow-x: hidden;
+  line-height: 1.55;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+/* ==========   HEADER   ========== */
+header {
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  background: rgba(255, 255, 255, 0.55);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  position: sticky;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 500;
+  transition: background 0.35s ease, border 0.35s ease;
+}
+body.dark header {
+  background: rgba(21, 23, 26, 0.6);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+.header-container {
+  max-width: 1400px;
+  padding: 1rem 5%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* ==========   SOCIAL ICONS + THEME TOGGLE   ========== */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.social-icons {
+  display: flex;
+  gap: 1rem;
+}
+.social-icons a {
+  color: var(--clr-text);
+  font-size: 1.25rem;
+  transition: color 0.3s ease;
+}
+.social-icons a:hover {
+  color: var(--clr-primary);
+}
+.theme-toggle {
+  background: none;
+  border: 2px solid var(--clr-primary);
+  color: var(--clr-primary);
+  border-radius: 50%;
+  width: 38px;
+  height: 38px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+.theme-toggle:hover {
+  background: var(--clr-primary);
+  color: #fff;
+}
+
+/* ==========   NAVIGATION   ========== */
+.logo img {
+  display: block;
+  height: 1.7rem;
+  width: auto;
+}
+nav ul {
+  display: flex;
+  gap: 2rem;
+  list-style: none;
+}
+nav a {
+  text-decoration: none;
+  color: var(--clr-text);
+  font-weight: 600;
+  position: relative;
+  transition: color 0.3s ease;
+}
+nav a:hover {
+  color: var(--clr-primary);
+}
+nav a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 0;
+  height: 2px;
+  background: var(--clr-primary);
+  transition: width 0.3s ease;
+}
+nav a:hover::after {
+  width: 100%;
+}
+
+/* ==========   MAIN   ========== */
+main {
+  max-width: 1400px;
+  margin: auto;
+  padding: 3rem 5%;
+}
+section {
+  margin-bottom: 4rem;
+}
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 2rem;
+  display: inline-block;
+  position: relative;
+  color: var(--clr-text);
+}
+.section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -8px;
+  width: 80px;
+  height: 4px;
+  background: var(--clr-primary);
+}
+
+/* ==========   LAST CHAPTERS   ========== */
+.latest-chapters {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 2rem;
+}
+.chapter-card {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: pointer;
+  background: var(--clr-bg-card);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.07);
+  transition: transform 0.4s cubic-bezier(0.2, 0.6, 0.2, 1), box-shadow 0.4s;
+}
+.chapter-card:hover {
+  transform: translateY(-10px) scale(1.02);
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+}
+.chapter-cover {
+  height: 100%;
+  overflow: hidden;
+}
+.chapter-cover img {
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.4s ease;
+}
+.chapter-card:hover .chapter-cover img {
+  transform: scale(1.07);
+}
+/* overlay info */
+.chapter-info {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  padding: 1rem;
+  color: #fff;
+  transition: background 0.35s ease;
+}
+.chapter-time {
+  position: absolute;
+  bottom: 1.1rem;
+  right: 1rem;
+  font-size: 0.85rem;
+  color: #ddd;
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.chapter-time i {
+  font-size: 1rem;
+}
+.manga-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.chapter-number {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--clr-accent);
+}
+.chapter-title {
+  font-size: 0.85rem;
+  color: #ddd;
+  margin-bottom: 0.2rem;
+}
+
+/* NEW badge */
+.new-badge {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  background: var(--clr-accent);
+  color: #fff;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+  border-radius: 999px;
+  animation: pulse 1.6s infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
+/* ==========   SERIES   ========== */
+.series-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 2rem;
+}
+.series-card {
+  display: flex;
+  align-items: stretch;
+  background: var(--clr-bg-card);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.07);
+  cursor: pointer;
+  transition: transform 0.35s cubic-bezier(0.2, 0.6, 0.2, 1), box-shadow 0.35s;
+}
+.series-card:hover {
+  transform: translateY(-8px) scale(1.01);
+  box-shadow: 0 18px 36px rgba(0, 0, 0, 0.1);
+}
+.series-cover {
+  flex: 0 0 140px;
+  position: relative;
+  overflow: hidden;
+}
+.series-cover img {
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.35s ease;
+}
+.series-card:hover .series-cover img {
+  transform: scale(1.07);
+}
+.series-info {
+  flex: 1;
+  padding: 1.2rem 1.4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+.series-title {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
+  color: var(--clr-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+.meta {
+  font-size: 0.9rem;
+  color: var(--clr-text-sub);
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.25rem;
+}
+.tag {
+  background: rgba(116, 92, 247, 0.15);
+  color: var(--clr-primary);
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+/* ==========   ANIMATIONS ENTREES   ========== */
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.section-title,
+.chapter-card,
+.series-card {
+  opacity: 0;
+  animation: fade-up 0.6s ease forwards;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  nav ul {
+    gap: 1rem;
+  }
+  .section-title {
+    font-size: 1.7rem;
+  }
+  .chapter-cover {
+    height: 260px;
+  }
+  .series-grid {
+    grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
+  }
+}
+
+/* ========== TRUNCATE TEXT ========== */
+.manga-title,
+.chapter-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chapter-number-stylish {
+  display: inline-block;
+  margin-top: 0.4rem;
+  padding: 0.2rem 0.6rem;
+  background: #373737;
+  color: #fff;
+  border-radius: 6px;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+.chapter-number-stylish:hover {
+  background: #242424;
+}
+
+/* ========== CAROUSEL LATEST CHAPTERS ========== */
+.carousel-container {
+  position: relative;
+  overflow: hidden;
+  margin-bottom: 2rem;
+}
+.carousel-track {
+  display: flex;
+  gap: 1rem;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+}
+.carousel-track::-webkit-scrollbar {
+  display: none;
+}
+.carousel-prev,
+.carousel-next {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 44px;
+  height: 44px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2rem;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.3s ease;
+  z-index: 10;
+}
+.carousel-prev:hover,
+.carousel-next:hover {
+  background: rgba(0, 0, 0, 0.7);
+  transform: translateY(-50%) scale(1.1);
+}
+.carousel-prev {
+  left: 0.75rem;
+}
+.carousel-next {
+  right: 0.75rem;
+}
+.carousel-track .chapter-card {
+  flex: 0 0 calc((100% - 3rem) / 4);
+  scroll-snap-align: start;
+}
+.carousel-track {
+  cursor: grab;
+}
+.carousel-track.active {
+  cursor: grabbing;
+}
+@media (max-width: 1024px) {
+  .carousel-track .chapter-card {
+    flex: 0 0 calc((100% - 1rem) / 2);
+  }
+}
+@media (max-width: 768px) {
+  .carousel-track .chapter-card {
+    flex: 0 0 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  nav ul {
+    display: none;
+  }
+}
