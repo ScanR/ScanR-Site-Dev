@@ -1,8 +1,7 @@
-// ─────────────────────────────────  app.js ─────────────────────────────────────
 const latestContainer = document.querySelector('.latest-chapters');
 const seriesContainer = document.querySelector('.series-grid');
 
-// Helpers pour ajuster les URLs de cover
+
 const appendSeriesCover  = url => `${url.slice(0, -4)}-s.jpg`;
 const appendChapterCover = url => `${url.slice(0, -4)}-m.jpg`;
 function timeAgo(ms) {
