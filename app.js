@@ -56,9 +56,9 @@ function renderSeries(s) {
       <div class="series-title">${s.title}</div>
       ${s.year   ? `<div class="meta">Année : ${s.year}</div>`   : ''}
       ${s.status ? `<div class="meta">Statut : ${s.status}</div>` : ''}
-      ${s.author ? `<div class="meta">Auteur : ${s.author}</div>` : ''}
+      ${s.author ? `<div class="meta"><strong>Auteur :</strong> ${s.author}</div>` : ''}
       ${s.artist && s.artist !== s.author
-        ? `<div class="meta">Artiste : ${s.artist}</div>`
+        ? `<div class="meta"><strong>Artiste :</strong> ${s.artist}</div>`
         : ''}
       ${Array.isArray(s.tags) ? `
         <div class="tags">
