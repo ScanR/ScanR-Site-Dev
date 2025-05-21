@@ -56,7 +56,6 @@ document.addEventListener("DOMContentLoaded", () => {
     .forEach((el) => observer.observe(el));
 });
 
-// ─────────────────────────────────  app.js ─────────────────────────────────────
 let CONFIG;
 
 const latestContainer = document.querySelector(".latest-chapters");
