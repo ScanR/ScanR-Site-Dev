@@ -49,69 +49,88 @@
 		}
 		img{display:block;width:100%;height:auto}
 
-		/* ==========   HEADER   ========== */
-		header{
-			backdrop-filter:blur(8px);
-			-webkit-backdrop-filter:blur(8px);
-			background:rgba(255,255,255,.55);
-			border-bottom:1px solid rgba(0,0,0,.08);
-			position:sticky;top:0;left:0;right:0;
-			z-index:500;
-			transition:background .35s ease,border .35s ease;
-		}
-		body.dark header{
-			background:rgba(21,23,26,.6);
-			border-bottom:1px solid rgba(255,255,255,.06);
-		}
-		.header-container{
-			max-width:1400px;
-			padding:1rem 5%;
-			margin:auto;
-			display:flex;
-			align-items:center;
-			justify-content:space-between;
-		}
-		.logo img {
-		display: block;
-		height: 1.7rem; /* pour correspondre à l’ancienne taille du texte */
-		width: auto;
-		}
-		nav ul{display:flex;gap:2rem;list-style:none}
-		nav a{
-			text-decoration:none;
-			color:var(--clr-text);
-			font-weight:600;
-			position:relative;
-			transition:color .3s ease;
-		}
-		nav a:hover{color:var(--clr-primary)}
-		nav a::after{
-			content:'';
-			position:absolute;left:0;bottom:-6px;
-			width:0;height:2px;
-			background:var(--clr-primary);
-			transition:width .3s ease;
-		}
-		nav a:hover::after{width:100%}
+    /* ==========   HEADER   ========== */
+    header{
+      backdrop-filter:blur(8px);
+      -webkit-backdrop-filter:blur(8px);
+      background:rgba(255,255,255,.55);
+      border-bottom:1px solid rgba(0,0,0,.08);
+      position:sticky;top:0;left:0;right:0;
+      z-index:500;
+      transition:background .35s ease,border .35s ease;
+    }
+    body.dark header{
+      background:rgba(21,23,26,.6);
+      border-bottom:1px solid rgba(255,255,255,.06);
+    }
+    .header-container{
+      max-width:1400px;
+      padding:1rem 5%;
+      margin:auto;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+    }
 
-		/* Toggle theme */
-		.theme-toggle{
-			background:none;
-			border:2px solid var(--clr-primary);
-			color:var(--clr-primary);
-			border-radius:50%;
-			width:38px;height:38px;
-			display:flex;align-items:center;justify-content:center;
-			cursor:pointer;
-			font-size:1rem;
-			transition:background .3s ease,color .3s ease;
-		}
-		.theme-toggle:hover{
-			background:var(--clr-primary);
-			color:#fff;
-		}
+    /* ==========   SOCIAL ICONS + THEME TOGGLE   ========== */
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+    .social-icons {
+      display: flex;
+      gap: 1rem;
+    }
+    .social-icons a {
+      color: var(--clr-text);
+      font-size: 1.25rem;
+      transition: color .3s ease;
+    }
+    .social-icons a:hover {
+      color: var(--clr-primary);
+    }
+    .theme-toggle{
+      background:none;
+      border:2px solid var(--clr-primary);
+      color:var(--clr-primary);
+      border-radius:50%;
+      width:38px;height:38px;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;
+      font-size:1rem;
+      transition:background .3s ease,color .3s ease;
+    }
+    .theme-toggle:hover{
+      background:var(--clr-primary);
+      color:#fff;
+    }
 
-		/* ==========   MAIN   ========== */
+    /* ==========   NAVIGATION   ========== */
+    .logo img {
+      display: block;
+      height: 1.7rem;
+      width: auto;
+    }
+    nav ul{display:flex;gap:2rem;list-style:none}
+    nav a{
+      text-decoration:none;
+      color:var(--clr-text);
+      font-weight:600;
+      position:relative;
+      transition:color .3s ease;
+    }
+    nav a:hover{color:var(--clr-primary)}
+    nav a::after{
+      content:'';
+      position:absolute;left:0;bottom:-6px;
+      width:0;height:2px;
+      background:var(--clr-primary);
+      transition:width .3s ease;
+    }
+    nav a:hover::after{width:100%}
+
+    /* ==========   MAIN   ========== */
 		main{max-width:1400px;margin:auto;padding:3rem 5%}
 		section{margin-bottom:4rem}
 		.section-title{
@@ -168,8 +187,8 @@
         font-size: 1rem;
         }
 		.manga-title{font-size:1.1rem;font-weight:700;margin-bottom:.25rem}
-		.chapter-number{font-size:.95rem;font-weight:600;color:var(--clr-accent);margin-bottom:.2rem}
-		.chapter-title{font-size:.85rem;color:#ddd}
+		.chapter-number{font-size:.95rem;font-weight:600;color:var(--clr-accent)}
+		.chapter-title{font-size:.85rem;color:#ddd;margin-bottom:.2rem}
 
 
 		/* NEW badge */
@@ -322,21 +341,32 @@
   <header>
     <div class="header-container">
       <div class="logo">
-        <img src="img/scanr.webp" alt="ScanR Logo" />
+        <a href="https://discord.com/invite/Pdmfmqk" target="_blank" rel="noopener noreferrer">
+          <img src="img/scanr.webp" alt="ScanR Logo" />
+        </a>
       </div>
       <nav>
         <ul>
           <li><a href="#"><i class="fas fa-home"></i> Accueil</a></li>
-		  <li>
-		  <a href="#series-section" id="nav-series-link">
-			  <i class="fas fa-book"></i> Séries
-		  </a>
-		  </li>
+          <li><a href="#series-section"><i class="fas fa-book"></i> Séries</a></li>
         </ul>
       </nav>
-      <button id="theme-toggle" class="theme-toggle" aria-label="Changer de thème">
-        <i class="fas fa-moon"></i>
-      </button>
+      <div class="header-actions">
+        <div class="social-icons">
+          <a href="https://www.youtube.com/channel/UCCaNnBazWhyzwKpgFUGTE7g" target="_blank" rel="noopener noreferrer" aria-label="YouTube">
+            <i class="fab fa-youtube"></i>
+          </a>
+          <a href="https://discord.com/invite/Pdmfmqk" target="_blank" rel="noopener noreferrer" aria-label="Discord">
+            <i class="fab fa-discord"></i>
+          </a>
+          <a href="https://x.com/TeamScanR" target="_blank" rel="noopener noreferrer" aria-label="X">
+            <i class="fab fa-twitter"></i>
+          </a>
+        </div>
+        <button id="theme-toggle" class="theme-toggle" aria-label="Changer de thème">
+          <i class="fas fa-moon"></i>
+        </button>
+      </div>
     </div>
   </header>
 
@@ -368,23 +398,44 @@
   </main>
 
   <script>
-    // ==========  DARK & LIGHT MODE  ==========
+  document.addEventListener('DOMContentLoaded', () => {
     const toggleBtn = document.getElementById('theme-toggle');
+    const logoImg   = document.querySelector('.logo img');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    const savedTheme = localStorage.getItem('mv-theme');
-    if ((savedTheme === 'dark') || (!savedTheme && prefersDark)) document.body.classList.add('dark');
+    const savedTheme  = localStorage.getItem('mv-theme');
+
+    // 1. Initialisation du thème et du logo au chargement
+    if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+      document.body.classList.add('dark');
+    } else {
+      document.body.classList.remove('dark');
+    }
 
     const updateIcon = () => {
       const icon = toggleBtn.querySelector('i');
-      icon.className = document.body.classList.contains('dark') ? 'fas fa-sun' : 'fas fa-moon';
+      icon.className = document.body.classList.contains('dark')
+        ? 'fas fa-sun'
+        : 'fas fa-moon';
     };
-    updateIcon();
 
+    const updateLogo = () => {
+      logoImg.src = document.body.classList.contains('dark')
+        ? 'img/scanr.webp'
+        : 'img/scanr-black.webp';
+    };
+
+    // applique tout de suite
+    updateIcon();
+    updateLogo();
+
+    // 2. Au clic, on bascule thème + logo + icône + stockage
     toggleBtn.addEventListener('click', () => {
-      document.body.classList.toggle('dark');
-      localStorage.setItem('mv-theme', document.body.classList.contains('dark') ? 'dark' : 'light');
+      const isDark = document.body.classList.toggle('dark');
+      localStorage.setItem('mv-theme', isDark ? 'dark' : 'light');
       updateIcon();
+      updateLogo();
     });
+  });
 
     // ==========  ANIMATION ON SCROLL  ==========
     document.addEventListener('DOMContentLoaded', () => {
@@ -399,6 +450,8 @@
 
       document.querySelectorAll('.chapter-card, .series-card, .section-title').forEach(el => observer.observe(el));
     });
+
+
   </script>
 
   <!-- App JS (back-end fetch + rendu dynamique) -->

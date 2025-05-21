@@ -21,7 +21,7 @@ const maybeNewBadge = lastUpdated =>
 // Rendus HTML
 function renderChapter(c) {
   return `
-  <div class="chapter-card" onclick="location.href='${c.url}'">
+  <div class="chapter-card" onclick="window.open('${c.url}', '_blank')">
     <div class="chapter-cover">
       <img src="${appendChapterCover(c.serieCover)}" alt="${c.serieTitle} – Cover">
       ${maybeNewBadge(c.last_updated)}
@@ -37,7 +37,7 @@ function renderChapter(c) {
 
 function renderSeries(s) {
   return `
-  <div class="series-card" onclick="location.href='${s.urlSerie}'">
+  <div class="series-card" onclick="window.open('${s.urlSerie}', '_blank')">
     <div class="series-cover">
       <img src="${appendSeriesCover(s.cover)}" alt="${s.title} – Cover">
     </div>
