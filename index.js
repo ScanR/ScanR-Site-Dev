@@ -60,7 +60,6 @@ document.addEventListener("DOMContentLoaded", () => {
 let CONFIG;
 
 const latestContainer = document.querySelector(".latest-chapters");
-const seriesContainer = document.querySelector(".series-grid");
 
 // Helpers pour ajuster les URLs de cover
 const appendSeriesCover = (url) => `${url.slice(0, -4)}-s.jpg`;
@@ -144,7 +143,9 @@ function renderSeries(s) {
         </div>`
           : ""
       }
-      <div class="meta">
+      ${
+        !s.os
+          ? `<div class="meta">
         Dernier chapitre :
         <a
           href="${lastChapUrl}"
@@ -154,7 +155,9 @@ function renderSeries(s) {
         >
           ${lastChap}
         </a>
-      </div>
+      </div>`
+          : ""
+      }
     </div>
   </div>`;
 }
@@ -186,10 +189,18 @@ async function bootstrap() {
   try {
     // 1) Récupérer et traiter les JSON de chaque série
     const allSeries = await fetchAllSeries(); // suppose fetchAllSeries() est défini ailleurs
-
+    const onGoing = allSeries.filter((serie) => !serie.completed && !serie.os);
+    const os = allSeries.filter((serie) => serie.os);
+    const completed = allSeries.filter((serie) => serie.completed);
     // 2a) Injection de la grille des séries
-    const seriesContainer = document.querySelector(".series-grid");
-    seriesContainer.innerHTML = allSeries.map(renderSeries).join("");
+    const seriesContainer = document.querySelector(".on-going");
+    seriesContainer.innerHTML = onGoing.map(renderSeries).join("");
+
+    const osContainer = document.querySelector(".one-shot");
+    osContainer.innerHTML = os.map(renderSeries).join("");
+
+    const completedContainer = document.querySelector(".completed");
+    completedContainer.innerHTML = completed.map(renderSeries).join("");
 
     // 2b) Construction et tri de tous les chapitres
     const allChapters = allSeries
