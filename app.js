@@ -1,4 +1,6 @@
 // ─────────────────────────────────  app.js ─────────────────────────────────────
+let CONFIG;
+
 const latestContainer = document.querySelector('.latest-chapters');
 const seriesContainer = document.querySelector('.series-grid');
 
@@ -82,7 +84,8 @@ function renderSeries(s) {
 
 // 1) Récupérer et traiter les JSON de chaque série
 async function fetchAllSeries() {
-  const contents = await fetch('https://api.github.com/repos/ScanR/Cubari/contents/')
+  CONFIG = await fetch("./config.json").then(res => res.json());
+  const contents = await fetch(CONFIG.URL_GIT_CUBARI)
     .then(r => {
       if (!r.ok) throw new Error(`GitHub API ${r.status}`);
       return r.json();
@@ -93,7 +96,7 @@ async function fetchAllSeries() {
     .filter(file => file.name.endsWith('.json'))
     .map(async file => {
       const serie = await fetch(file.download_url).then(r => r.json());
-      const base64Url = btoa(`raw/ScanR/Cubari/refs/heads/main/${file.name}`);
+      const base64Url = btoa(`${CONFIG.URL_RAW_JSON_GITHUB}${file.name}`);
       serie.urlSerie   = `https://cubari.moe/read/gist/${base64Url}`;
       serie.base64Url  = base64Url;
       return serie;
