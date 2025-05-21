@@ -36,6 +36,17 @@ function renderChapter(c) {
 }
 
 function renderSeries(s) {
+  // Calcul du numéro du dernier chapitre
+  const lastChap = Object
+    .keys(s.chapters)
+    .reduce((max, curr) =>
+      parseFloat(curr) > parseFloat(max) ? curr : max
+    , '0');
+
+  // Construction de l'URL vers le dernier chapitre
+  const safeChap = lastChap.replaceAll('.', '-');
+  const lastChapUrl = `https://cubari.moe/read/gist/${s.base64Url}/${safeChap}/1/`;
+
   return `
   <div class="series-card" onclick="window.open('${s.urlSerie}', '_blank')">
     <div class="series-cover">
@@ -54,6 +65,17 @@ function renderSeries(s) {
           ${s.tags.slice(0,6).map(t => `<span class="tag">${t}</span>`).join('')}
         </div>` : ''
       }
+      <div class="meta">
+        Dernier chapitre :
+        <a
+          href="${lastChapUrl}"
+          target="_blank"
+          class="chapter-number-stylish"
+          onclick="event.stopPropagation()"
+        >
+          ${lastChap}
+        </a>
+      </div>
     </div>
   </div>`;
 }
