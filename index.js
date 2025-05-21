@@ -209,6 +209,7 @@ async function bootstrap() {
           chapData.serieTitle = serie.title;
           chapData.serieCover = serie.cover;
           chapData.chapter = chapNum;
+          chapData.last_updated = chapData.last_updated * 1000;
           chapData.url = `https://cubari.moe/read/gist/${
             serie.base64Url
           }/${chapNum.replaceAll(".", "-")}/1/`;
