@@ -68,11 +68,17 @@ body.dark header {
   justify-content: space-between;
 }
 
+.logo {
+  width: 15%;
+}
+
 /* ==========   SOCIAL ICONS + THEME TOGGLE   ========== */
 .header-actions {
   display: flex;
   align-items: center;
   gap: 1rem;
+  width: 15%;
+  justify-content: flex-end;
 }
 .social-icons {
   display: flex;
