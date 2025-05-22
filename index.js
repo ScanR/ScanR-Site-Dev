@@ -111,7 +111,7 @@ function renderSeries(s) {
 
   // Construction de l'URL vers le dernier chapitre
   const safeChap = lastChap.replaceAll(".", "-");
-  const lastChapUrl = `https://cubari.moe/read/gist/${s.base64Url}/${safeChap}/1/`;
+  const lastChapUrl = `https://teamscanr.fr/read/gist/${s.base64Url}/${safeChap}/1/`;
 
   return `
   <div class="series-card" onclick="window.open('${s.urlSerie}', '_blank')">
@@ -176,7 +176,7 @@ async function fetchAllSeries() {
     .map(async (file) => {
       const serie = await fetch(file.download_url).then((r) => r.json());
       const base64Url = btoa(`${CONFIG.URL_RAW_JSON_GITHUB}${file.name}`);
-      serie.urlSerie = `https://cubari.moe/read/gist/${base64Url}`;
+      serie.urlSerie = `https://teamscanr.fr/read/gist/${base64Url}`;
       serie.base64Url = base64Url;
       return serie;
     });
@@ -210,7 +210,7 @@ async function bootstrap() {
           chapData.serieCover = serie.cover;
           chapData.chapter = chapNum;
           chapData.last_updated = chapData.last_updated * 1000;
-          chapData.url = `https://cubari.moe/read/gist/${
+          chapData.url = `https://teamscanr.fr/read/gist/${
             serie.base64Url
           }/${chapNum.replaceAll(".", "-")}/1/`;
           return chapData;

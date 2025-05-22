@@ -370,6 +370,10 @@ section {
   .series-grid {
     grid-template-columns: repeat(auto-fill, minmax(100%, 1fr));
   }
+
+  .chapter-cover img {
+    height: 190%;
+  }
 }
 
 /* ========== TRUNCATE TEXT ========== */
