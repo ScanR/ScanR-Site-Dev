@@ -1,0 +1,5 @@
+.cubari-logo:before {
+  content: "";
+  font-family: 'coobaree';
+  display: inline-block;
+}
