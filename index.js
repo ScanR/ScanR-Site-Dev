@@ -59,6 +59,19 @@ document.addEventListener("DOMContentLoaded", () => {
 // ─────────────────────────────────  app.js ─────────────────────────────────────
 let CONFIG;
 
+const konami = [
+  "arrowup",
+  "arrowup",
+  "arrowdown",
+  "arrowdown",
+  "arrowleft",
+  "arrowright",
+  "arrowleft",
+  "arrowright",
+  "b",
+  "a",
+];
+
 const latestContainer = document.querySelector(".latest-chapters");
 
 // Helpers pour ajuster les URLs de cover
@@ -164,7 +177,12 @@ function renderSeries(s) {
 
 // 1) Récupérer et traiter les JSON de chaque série
 async function fetchAllSeries() {
-  CONFIG = await fetch("./config.json").then((res) => res.json());
+  const dev = await fetch("./config-dev.json");
+  if (dev.status === 404) {
+    CONFIG = await fetch("./config.json").then((res) => res.json());
+  } else {
+    CONFIG = await dev.json();
+  }
   const contents = await fetch(CONFIG.URL_GIT_CUBARI).then((r) => {
     if (!r.ok) throw new Error(`GitHub API ${r.status}`);
     return r.json();
@@ -189,9 +207,12 @@ async function bootstrap() {
   try {
     // 1) Récupérer et traiter les JSON de chaque série
     const allSeries = await fetchAllSeries(); // suppose fetchAllSeries() est défini ailleurs
-    const onGoing = allSeries.filter((serie) => !serie.completed && !serie.os);
+    const onGoing = allSeries.filter(
+      (serie) => !serie.completed && !serie.os && !serie.konami
+    );
     const os = allSeries.filter((serie) => serie.os);
     const completed = allSeries.filter((serie) => serie.completed);
+
     // 2a) Injection de la grille des séries
     const seriesContainer = document.querySelector(".on-going");
     seriesContainer.innerHTML = onGoing.map(renderSeries).join("");
@@ -286,6 +307,26 @@ async function bootstrap() {
       const walk = (x - startX) * 1.5;
       track.scrollLeft = scrollStart - walk;
     });
+
+    // Konami
+    const konamiSerie = allSeries.filter((serie) => serie.konami)[0];
+    if (konami) {
+      const attempt = [];
+      document.addEventListener("keydown", (e) => {
+        if (e.key.toLocaleLowerCase() === konami[attempt.length]) {
+          attempt.push(e.key.toLocaleLowerCase());
+          console.log(e.key);
+          if (konami.length === attempt.length) {
+            document.location = `https://teamscanr.fr/read/gist/${konamiSerie.base64Url}`;
+          }
+        } else {
+          if (attempt.length !== 2 || e.key.toLocaleLowerCase() !== "arrowup") {
+            attempt.length = 0;
+            console.log(attempt);
+          }
+        }
+      });
+    }
   } catch (err) {
     console.error("Erreur de chargement :", err);
     document.querySelector(".carousel-track").innerHTML =
