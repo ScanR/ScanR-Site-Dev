@@ -316,7 +316,12 @@ async function bootstrap() {
         if (e.key.toLocaleLowerCase() === konami[attempt.length]) {
           attempt.push(e.key.toLocaleLowerCase());
           if (konami.length === attempt.length) {
-            document.location = `https://teamscanr.fr/read/gist/${konamiSerie.base64Url}`;
+            window
+              .open(
+                `https://teamscanr.fr/read/gist/${konamiSerie.base64Url}`,
+                "_blank"
+              )
+              .focus();
           }
         } else {
           if (attempt.length !== 2 || e.key.toLocaleLowerCase() !== "arrowup") {
