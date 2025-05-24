@@ -315,14 +315,12 @@ async function bootstrap() {
       document.addEventListener("keydown", (e) => {
         if (e.key.toLocaleLowerCase() === konami[attempt.length]) {
           attempt.push(e.key.toLocaleLowerCase());
-          console.log(e.key);
           if (konami.length === attempt.length) {
             document.location = `https://teamscanr.fr/read/gist/${konamiSerie.base64Url}`;
           }
         } else {
           if (attempt.length !== 2 || e.key.toLocaleLowerCase() !== "arrowup") {
             attempt.length = 0;
-            console.log(attempt);
           }
         }
       });
