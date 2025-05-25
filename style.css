@@ -474,3 +474,343 @@ section {
     display: none;
   }
 }
+
+/* ==========   PAGE SÉRIE   ========== */
+.serie-hero {
+  margin: 3rem 0 4rem;
+  display: flex;
+  gap: 2.5rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.serie-hero .cover {
+  flex: 0 0 260px;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 14px 34px rgba(0,0,0,.1);
+}
+.serie-hero img { height: 100%; object-fit: cover; }
+
+.serie-hero .infos { flex: 1; display: flex; flex-direction: column; gap: 1rem; }
+.serie-hero h1 { font-size: 2.2rem; font-weight: 800; line-height: 1.2; }
+.serie-hero .synopsis { font-size: .95rem; color: var(--clr-text-sub); }
+
+.serie-hero .meta { list-style: none; font-size: .9rem; color: var(--clr-text-sub); }
+.serie-hero .meta li { margin-bottom: .25rem; }
+
+.chapters-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill,minmax(260px,1fr));
+  gap: 1.2rem;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .6s ease .15s, transform .6s ease .15s;
+}
+
+/* mini-carte chapitre */
+.chapter-card-mini {
+  display: flex;
+  flex-direction: column;
+  gap: .3rem;
+  padding: 1rem 1.2rem;
+  background: var(--clr-bg-card);
+  border-radius: 12px;
+  text-decoration: none;
+  color: var(--clr-text);
+  box-shadow: 0 10px 24px rgba(0,0,0,.07);
+  transition: transform .35s cubic-bezier(.2,.6,.2,1), box-shadow .35s;
+}
+.chapter-card-mini:hover {
+  transform: translateY(-6px) scale(1.03);
+  box-shadow: 0 18px 36px rgba(0,0,0,.1);
+}
+.chapter-card-mini .num   { font-weight: 600; }
+.chapter-card-mini .title { font-size: .9rem; color: var(--clr-text-sub); }
+.chapter-card-mini .time  { font-size: .8rem; color: var(--clr-text-sub); display: flex; align-items: center; gap: .25rem; }
+
+@media (max-width: 768px) {
+  .serie-hero { flex-direction: column; align-items: center; text-align: center; }
+  .serie-hero .cover { width: 60%; max-width: 300px; }
+}
+
+/* === Mise en page deux colonnes === */
+.serie-container {
+  display: grid;
+  grid-template-columns: 300px 1fr;
+  gap: 2.5rem;
+  padding: 3rem 5%;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.serie-aside {
+  position: sticky;
+  top: 1.5rem;
+  align-self: start;
+}
+.serie-aside .cover {
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 12px 28px rgba(0,0,0,.07);
+  margin-bottom: 1.5rem;
+}
+.serie-aside img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.meta-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
+  gap: .75rem 1rem;
+}
+.meta-list li {
+  background: var(--clr-bg-card);
+  padding: .6rem .8rem;
+  border-radius: 8px;
+  font-size: .85rem;
+  color: var(--clr-text-sub);
+  box-shadow: 0 8px 20px rgba(0,0,0,.05);
+  font-weight: 500;
+}
+
+.chapters-list {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+  max-height: 600px;
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.chapters-list::-webkit-scrollbar {
+  display: none;
+}
+
+.meta-list li strong {
+  color: var(--clr-primary);
+}
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .4rem;
+}
+.tag {
+  background: rgba(116,92,247,.15);
+  color: var(--clr-primary);
+  padding: .2rem .6rem;
+  border-radius: 6px;
+  font-size: .75rem;
+  font-weight: 600;
+}
+
+/* === Contenu principal === */
+.serie-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.serie-header h1 {
+  font-size: 2.4rem;
+  margin-bottom: .6rem;
+}
+.serie-header .synopsis {
+  font-size: 1rem;
+  line-height: 1.5;
+  color: var(--clr-text-sub);
+  white-space: normal;
+  overflow-wrap: break-word;
+  max-height: 180px;
+  overflow-y: auto;
+  padding-right: .5rem;
+  margin-bottom: 1.5rem;
+  padding-top: 1rem;
+}
+
+/* === Chapitres horizontaux === */
+.chapters-section h2 {
+  margin-bottom: 1rem;
+  font-size: 1.6rem;
+}
+
+.chapters-section h2::after {
+  content: "";
+  display: block;
+  width: 60px;
+  height: 4px;
+  background: var(--clr-primary);
+  margin-top: .5rem;
+}
+
+.chapter-card-horizontal {
+  flex: 0 0 auto;
+  display: grid;
+  grid-template-columns: auto 1fr auto auto;
+  align-items: center;
+  gap: .8rem;
+  padding: .8rem 1.2rem;
+  background: var(--clr-bg-card);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.07);
+  cursor: pointer;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+.chapter-card-horizontal:hover {
+  transform: translateY(-4px);
+  color: var(--clr-accent);
+  box-shadow: 0 16px 32px rgba(0,0,0,.1);
+}
+.c-num    { font-weight: 600; white-space: nowrap; }
+.c-num:hover { color: var(--clr-accent); }
+.c-title  { font-size: .9rem; color: var(--clr-text); overflow: hidden; text-overflow: ellipsis; max-width: 380px; }
+.c-group  { font-size: .85rem; color: var(--clr-text-sub); white-space: nowrap; text-align: right; }
+.c-date   { font-size: .8rem; color: var(--clr-text-sub); white-space: nowrap; padding-left:1rem;}
+.chapter-card-horizontal .c-num {
+  transition: color 0.3s ease-in-out;
+}
+
+
+.chapter-card-horizontal .c-title {
+  transition: color 0.3s ease-in-out;
+}
+
+.chapter-card-horizontal:hover .c-title {
+  color: var(--clr-accent);
+}
+/* Réactivité mobile */
+@media (max-width: 768px) {
+  .serie-container {
+    display: flex;
+    flex-direction: column;
+    padding: 2rem 3%;
+  }
+  .serie-aside {
+    position: relative;
+    top: auto;
+    margin-bottom: 2rem;
+    text-align: center;
+  }
+  .chapters-row {
+    gap: .8rem;
+  }
+  .chapter-card-horizontal {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: repeat(2, auto);
+    gap: .4rem;
+  }
+  .c-group, .c-date { display: none; }
+}
+
+.serie-header .section-title {
+  font-size: 2.4rem;
+  margin-bottom: .8rem;
+  display: inline-block;
+  position: relative;
+  color: var(--clr-text);
+}
+
+.serie-header .section-title::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 60px;
+  height: 4px;
+  background: var(--clr-primary);
+}
+
+/* ==== Bouton de tri ==== */
+.chapters-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+/* === Bouton de tri “joli” === */
+.toggle-order {
+  background: var(--clr-primary);
+  border: none;
+  color: #fff;
+  padding: 0.5rem 0.75rem;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.toggle-order i {
+  font-size: 1rem;
+}
+.toggle-order:hover {
+  background: var(--clr-accent);
+  transform: scale(1.05);
+}
+.toggle-order:focus {
+  outline: 2px solid var(--clr-accent);
+  outline-offset: 2px;
+}
+
+/* ==== Volume dans la fiche chapitre ==== */
+.chapter-card-vertical {
+  display: grid;
+  /* Colonne fixe pour chaque span : 
+     • c-num (Chap.) → 70px 
+     • c-vol (Tome) → 40px 
+     • c-title (Titre) → prend le reste 
+     • c-group (Groupe) → 120px 
+     • c-date (Date)  → 100px */
+  grid-template-columns: 
+    60px   /* c-num  */ 
+    70px
+    1fr    /* c-title*/ 
+    148px  /* c-group*/ 
+    100px; /* c-date */
+  align-items: center;
+  gap: .6rem;
+  padding: .8rem 1.2rem;
+  background: var(--clr-bg-card);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0,0,0,.07);
+  cursor: pointer;
+  transition: transform .3s ease, box-shadow .3s ease;
+}
+
+.chapter-card-vertical .c-num,
+.chapter-card-vertical .c-vol,
+.chapter-card-vertical .c-title {
+  transition: color 0.3s ease-in-out;
+}
+
+/* Au survol de la carte verticale, passe ces éléments en couleur accent */
+.chapter-card-vertical:hover .c-num,
+.chapter-card-vertical:hover .c-vol,
+.chapter-card-vertical:hover .c-title {
+  color: var(--clr-accent);
+}
+
+.chapter-card-vertical:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 32px rgba(0,0,0,.1);
+}
+.chapter-card-vertical .c-vol {
+  font-size: .85rem;
+  font-weight: 600;
+  color: var(--clr-text-sub);
+  white-space: nowrap;
+}
+
+/* Responsive : masque le volume si trop étroit */
+@media (max-width: 768px) {
+  .chapter-card-vertical {
+    grid-template-columns: auto 1fr;
+    grid-template-rows: repeat(3, auto);
+  }
+  .c-vol { display: none; }
+}

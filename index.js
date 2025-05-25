@@ -127,7 +127,7 @@ function renderSeries(s) {
   const lastChapUrl = `https://teamscanr.fr/read/gist/${s.base64Url}/${safeChap}/1/`;
 
   return `
-  <div class="series-card" onclick="window.open('${s.urlSerie}', '_blank')">
+  <div class="series-card" onclick="window.location.href='serie.html?id=${s.base64Url}'">
     <div class="series-cover">
       <img src="${appendSeriesCover(s.cover)}" alt="${s.title} – Cover">
     </div>
