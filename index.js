@@ -175,31 +175,13 @@ function renderSeries(s) {
   </div>`;
 }
 
-// 1) Récupérer et traiter les JSON de chaque série
 async function fetchAllSeries() {
-  const dev = await fetch("./config-dev.json");
-  if (dev.status === 404) {
-    CONFIG = await fetch("./config.json").then((res) => res.json());
-  } else {
-    CONFIG = await dev.json();
+  const url = 'https://raw.githubusercontent.com/ScanR/Cubari/refs/heads/main/all_series.json';
+  const res = await fetch(url);
+  if (!res.ok) {
+    throw new Error(`Erreur HTTP ${res.status} en récupérant all_series.json`);
   }
-  const contents = await fetch(CONFIG.URL_GIT_CUBARI).then((r) => {
-    if (!r.ok) throw new Error(`GitHub API ${r.status}`);
-    return r.json();
-  });
-
-  // contents est un tableau d'objets { name, download_url, ... }
-  const seriesPromises = contents
-    .filter((file) => file.name.endsWith(".json"))
-    .map(async (file) => {
-      const serie = await fetch(file.download_url).then((r) => r.json());
-      const base64Url = btoa(`${CONFIG.URL_RAW_JSON_GITHUB}${file.name}`);
-      serie.urlSerie = `https://teamscanr.fr/read/gist/${base64Url}`;
-      serie.base64Url = base64Url;
-      return serie;
-    });
-
-  return Promise.all(seriesPromises);
+  return res.json(); 
 }
 
 // 2) À partir de ces séries, bâtir liste de chapitres et liste de séries
