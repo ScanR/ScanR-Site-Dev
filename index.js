@@ -116,15 +116,18 @@ function renderChapter(c) {
 }
 
 function renderSeries(s) {
-  // Calcul du numéro du dernier chapitre
+  // 1) Calcul du numéro du dernier chapitre
   const lastChap = Object.keys(s.chapters).reduce(
     (max, curr) => (parseFloat(curr) > parseFloat(max) ? curr : max),
     "0"
   );
 
-  // Construction de l'URL vers le dernier chapitre
+  // 2) On remplace les points pour correspondre à la route
   const safeChap = lastChap.replaceAll(".", "-");
-  const lastChapUrl = `https://teamscanr.fr/read/gist/${s.base64Url}/${safeChap}/1/`;
+
+  // 3) Lien complet vers le dernier chapitre
+  //    s.urlSerie vaut "https://teamscanr.fr/read/gist/<base64>"
+  const lastChapUrl = `${s.urlSerie}/${safeChap}/1/`;
 
   return `
   <div class="series-card" onclick="window.open('${s.urlSerie}', '_blank')">
@@ -133,144 +136,122 @@ function renderSeries(s) {
     </div>
     <div class="series-info">
       <div class="series-title">${s.title}</div>
-      ${s.year ? `<div class="meta">Année : ${s.year}</div>` : ""}
-      ${s.status ? `<div class="meta">Statut : ${s.status}</div>` : ""}
-      ${
-        s.author
-          ? `<div class="meta"><strong>Auteur :</strong> ${s.author}</div>`
-          : ""
-      }
-      ${
-        s.artist && s.artist !== s.author
-          ? `<div class="meta"><strong>Artiste :</strong> ${s.artist}</div>`
-          : ""
-      }
-      ${
-        Array.isArray(s.tags)
-          ? `
-        <div class="tags">
-          ${s.tags
-            .slice(0, 6)
-            .map((t) => `<span class="tag">${t}</span>`)
-            .join("")}
-        </div>`
-          : ""
-      }
+      ${s.year    ? `<div class="meta">Année : ${s.year}</div>`   : ""}
+      ${s.status  ? `<div class="meta">Statut : ${s.status}</div>` : ""}
+      ${s.author  
+        ? `<div class="meta"><strong>Auteur :</strong> ${s.author}</div>`
+        : ""}
+      ${s.artist && s.artist !== s.author
+        ? `<div class="meta"><strong>Artiste :</strong> ${s.artist}</div>`
+        : ""}
+      ${Array.isArray(s.tags)
+        ? `
+      <div class="tags">
+        ${s.tags.slice(0, 6).map(t => `<span class="tag">${t}</span>`).join("")}
+      </div>`
+        : ""}
       ${
         !s.os
           ? `<div class="meta">
-        Dernier chapitre :
-        <a
-          href="${lastChapUrl}"
-          target="_blank"
-          class="chapter-number-stylish"
-          onclick="event.stopPropagation()"
-        >
-          ${lastChap}
-        </a>
-      </div>`
+              Dernier chapitre :
+              <a
+                href="${lastChapUrl}"
+                target="_blank"
+                class="chapter-number-stylish"
+                onclick="event.stopPropagation()"
+              >
+                ${lastChap}
+              </a>
+            </div>`
           : ""
       }
     </div>
   </div>`;
 }
 
+
 async function fetchAllSeries() {
-  const url = 'https://raw.githubusercontent.com/ScanR/Cubari/refs/heads/main/all_series.json';
-  const res = await fetch(url);
+  const res = await fetch('https://raw.githubusercontent.com/ScanR/Cubari/refs/heads/main/all_series.json');
   if (!res.ok) {
     throw new Error(`Erreur HTTP ${res.status} en récupérant all_series.json`);
   }
-  return res.json(); 
+  return res.json(); // renvoie tableau d'objets, chacun avec .id et .urlSerie
 }
 
 // 2) À partir de ces séries, bâtir liste de chapitres et liste de séries
 async function bootstrap() {
   try {
-    // 1) Récupérer et traiter les JSON de chaque série
-    const allSeries = await fetchAllSeries(); // suppose fetchAllSeries() est défini ailleurs
-    const onGoing = allSeries.filter(
-      (serie) => !serie.completed && !serie.os && !serie.konami
-    );
-    const os = allSeries.filter((serie) => serie.os);
-    const completed = allSeries.filter((serie) => serie.completed);
+    const allSeries = await fetchAllSeries();
 
-    // 2a) Injection de la grille des séries
-    const seriesContainer = document.querySelector(".on-going");
-    seriesContainer.innerHTML = onGoing.map(renderSeries).join("");
+    // Séparer les séries selon leur statut
+    const onGoing   = allSeries.filter(s => !s.completed && !s.os && !s.konami);
+    const os        = allSeries.filter(s => s.os);
+    const completed = allSeries.filter(s => s.completed);
 
-    const osContainer = document.querySelector(".one-shot");
-    osContainer.innerHTML = os.map(renderSeries).join("");
+    // Injection des grilles de séries
+    document.querySelector('.on-going').innerHTML   = onGoing.map(renderSeries).join('');
+    document.querySelector('.one-shot').innerHTML   = os.map(renderSeries).join('');
+    document.querySelector('.completed').innerHTML  = completed.map(renderSeries).join('');
 
-    const completedContainer = document.querySelector(".completed");
-    completedContainer.innerHTML = completed.map(renderSeries).join("");
-
-    // 2b) Construction et tri de tous les chapitres
+    // Construction et tri des derniers chapitres
     const allChapters = allSeries
-      .flatMap((serie) =>
+      .flatMap(serie =>
         Object.entries(serie.chapters).map(([chapNum, chapData]) => {
-          chapData.serieTitle = serie.title;
-          chapData.serieCover = serie.cover;
-          chapData.chapter = chapNum;
-          chapData.last_updated = chapData.last_updated * 1000;
-          chapData.url = `https://teamscanr.fr/read/gist/${
-            serie.base64Url
-          }/${chapNum.replaceAll(".", "-")}/1/`;
+          chapData.serieTitle   = serie.title;
+          chapData.serieCover   = serie.cover;
+          chapData.chapter      = chapNum;
+          chapData.last_updated = Number(chapData.last_updated) * 1000;
+
+          // Génération de l'URL du chapitre
+          const safeChap = chapNum.replaceAll('.', '-');
+          chapData.url = `${serie.urlSerie}/${safeChap}/1/`;
+
           return chapData;
         })
       )
       .sort((a, b) => b.last_updated - a.last_updated)
       .slice(0, 15);
 
-    // 2c) Injection du carousel des chapitres
-    const track = document.querySelector(".carousel-track");
-    track.innerHTML = allChapters.map(renderChapter).join("");
+    // Injection du carousel des chapitres
+    const track = document.querySelector('.carousel-track');
+    track.innerHTML = allChapters.map(renderChapter).join('');
 
-    // 3) Initialisation des flèches
-    const prevBtn = document.querySelector(".carousel-prev");
-    const nextBtn = document.querySelector(".carousel-next");
-    const visibleWidth = track.clientWidth;
-    const maxScrollLeft = track.scrollWidth - visibleWidth;
+    // Initialisation des flèches et du drag-to-scroll
+    const prevBtn = document.querySelector('.carousel-prev');
+    const nextBtn = document.querySelector('.carousel-next');
+    let isDragging = false, startX = 0, scrollStart = 0;
 
-    nextBtn.addEventListener("click", () => {
+    nextBtn.addEventListener('click', () => {
       const visibleWidth = track.clientWidth;
-      const maxScrollLeft = track.scrollWidth - visibleWidth;
-      if (track.scrollLeft >= maxScrollLeft) {
-        track.scrollTo({ left: 0, behavior: "smooth" });
-      } else {
-        track.scrollBy({ left: visibleWidth, behavior: "smooth" });
-      }
+      const maxScroll = track.scrollWidth - visibleWidth;
+      track.scrollTo({
+        left: track.scrollLeft >= maxScroll ? 0 : track.scrollLeft + visibleWidth,
+        behavior: 'smooth'
+      });
     });
 
-    prevBtn.addEventListener("click", () => {
+    prevBtn.addEventListener('click', () => {
       const visibleWidth = track.clientWidth;
-      const maxScrollLeft = track.scrollWidth - visibleWidth;
-      if (track.scrollLeft <= 0) {
-        track.scrollTo({ left: maxScrollLeft, behavior: "smooth" });
-      } else {
-        track.scrollBy({ left: -visibleWidth, behavior: "smooth" });
-      }
+      const maxScroll = track.scrollWidth - visibleWidth;
+      track.scrollTo({
+        left: track.scrollLeft <= 0 ? maxScroll : track.scrollLeft - visibleWidth,
+        behavior: 'smooth'
+      });
     });
 
-    // 4) Swipe / drag-to-scroll
-    let isDragging = false;
-    let startX = 0;
-    let scrollStart = 0;
-
-    // Desktop (souris)
-    track.addEventListener("mousedown", (e) => {
+    track.addEventListener('mousedown', e => {
       isDragging = true;
-      track.classList.add("active");
       startX = e.pageX - track.offsetLeft;
       scrollStart = track.scrollLeft;
+      track.classList.add('active');
     });
 
-    document.addEventListener("mouseup", () => {
+    document.addEventListener('mouseup', () => {
       isDragging = false;
-      track.classList.remove("active");
+      track.classList.remove('active');
     });
 
-    track.addEventListener("mousemove", (e) => {
+    track.addEventListener('mousemove', e => {
       if (!isDragging) return;
       e.preventDefault();
       const x = e.pageX - track.offsetLeft;
@@ -278,48 +259,41 @@ async function bootstrap() {
       track.scrollLeft = scrollStart - walk;
     });
 
-    // Mobile (touch)
-    track.addEventListener("touchstart", (e) => {
+    // Touch events
+    track.addEventListener('touchstart', e => {
       startX = e.touches[0].pageX - track.offsetLeft;
       scrollStart = track.scrollLeft;
     });
-
-    track.addEventListener("touchmove", (e) => {
+    track.addEventListener('touchmove', e => {
       const x = e.touches[0].pageX - track.offsetLeft;
       const walk = (x - startX) * 1.5;
       track.scrollLeft = scrollStart - walk;
     });
 
     // Konami
-    const konamiSerie = allSeries.filter((serie) => serie.konami)[0];
-    if (konami) {
+    const konamiSerie = allSeries.find(s => s.konami);
+    if (konamiSerie) {
       const attempt = [];
-      document.addEventListener("keydown", (e) => {
-        if (e.key.toLocaleLowerCase() === konami[attempt.length]) {
-          attempt.push(e.key.toLocaleLowerCase());
-          if (konami.length === attempt.length) {
-            window
-              .open(
-                `https://teamscanr.fr/read/gist/${konamiSerie.base64Url}`,
-                "_blank"
-              )
-              .focus();
+      const seq = ["arrowup","arrowup","arrowdown","arrowdown","arrowleft","arrowright","arrowleft","arrowright","b","a"];
+      document.addEventListener('keydown', e => {
+        const key = e.key.toLowerCase();
+        if (key === seq[attempt.length]) {
+          attempt.push(key);
+          if (attempt.length === seq.length) {
+            window.open(konamiSerie.urlSerie, '_blank').focus();
           }
         } else {
-          if (attempt.length !== 2 || e.key.toLocaleLowerCase() !== "arrowup") {
-            attempt.length = 0;
-          }
+          attempt.length = (key === 'arrowup' ? 1 : 0);
         }
       });
     }
+
   } catch (err) {
-    console.error("Erreur de chargement :", err);
-    document.querySelector(".carousel-track").innerHTML =
-      "<p>Impossible de charger les chapitres.</p>";
-    document.querySelector(".series-grid").innerHTML =
-      "<p>Impossible de charger les séries.</p>";
+    console.error('Erreur de chargement :', err);
+    document.querySelector('.carousel-track').innerHTML = '<p>Impossible de charger les chapitres.</p>';
+    document.querySelector('.series-grid').innerHTML    = '<p>Impossible de charger les séries.</p>';
   }
 }
 
-// Lancement de l’app
+// Lancer l’application
 bootstrap();
