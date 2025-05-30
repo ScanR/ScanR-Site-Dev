@@ -72,7 +72,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     serie = JSON.parse(cached);
   } else {
     try {
-      const urlJSON   = `${CONFIG.CDN_URL}${allSerie[slug]}`;
+      const urlJSON   = `${CONFIG.URL_CDN}${allSerie[slug]}`;
       const response  = await fetch(urlJSON);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       serie = await response.json();
