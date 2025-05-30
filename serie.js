@@ -83,6 +83,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   }
 
+  const id = btoa(`${CONFIG.URL_RAW_JSON_GITHUB}${allSerie[slug]}`);
+
   /* ---------------------------------------------------------------- 
    * 3. Affichage
    * ---------------------------------------------------------------- */
