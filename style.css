@@ -804,6 +804,7 @@ section {
   font-weight: 600;
   color: var(--clr-text-sub);
   white-space: nowrap;
+  text-align: center;
 }
 
 /* Responsive : masque le volume si trop étroit */
