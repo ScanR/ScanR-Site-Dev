@@ -1,7 +1,15 @@
 // serie.js – affiche la fiche d’une série en se basant sur l’ID base64 passé dans l’URL
 // Exemple : serie.html?id=aHR0cHM6Ly4uLg==
-
+let CONFIG;
 document.addEventListener("DOMContentLoaded", async () => {
+
+  const dev = await fetch("./config-dev.json");
+  if (dev.status === 404) {
+    CONFIG = await fetch("./config.json").then((res) => res.json());
+  } else {
+    CONFIG = await dev.json();
+  }
+
   /* ---------------------------------------------------------------- 
    * 1. Gestion light/dark + logo (copié de votre index.js)
    * ---------------------------------------------------------------- */
@@ -33,25 +41,42 @@ document.addEventListener("DOMContentLoaded", async () => {
   /* ---------------------------------------------------------------- 
    * 2. Récupération des données de la série
    * ---------------------------------------------------------------- */
-  const params = new URLSearchParams(window.location.search);
-  const id     = params.get("id");
-  if (!id) return showError("Paramètre « id » manquant dans l’URL.");
+  const getSlug = url => new URL(url).pathname.match(/[^\/]+/g)
+  const slugs = getSlug(window.location);
+  const slug = slugs[0];
+  if (!slug) return showError("Paramètre « slug » manquant dans l’URL.");
+
+  const allSerieCached = localStorage.getItem("index.json");
+  let allSerie;
+  if(allSerieCached) allSerie = JSON.parse(allSerieCached);
+  else {
+    try{
+      const response = await fetch(`${CONFIG.URL_CDN}index.json`);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      allSerie = await response.json();
+      localStorage.setItem("index.json", JSON.stringify(allSerie));
+    } catch(err) {
+      console.error(err);
+      return showError("Impossible de charger la série.");
+    }
+  } 
+
+  if(!allSerie[slug]) {
+    return document.location("/404");
+  }
 
   let serie;
   // a) si les données sont déjà présentes en cache (localStorage) :
-  const cached = localStorage.getItem(`serie-${id}`);
+  const cached = localStorage.getItem(`serie-${slug}`);
   if (cached) {
     serie = JSON.parse(cached);
   } else {
-    // b) sinon on télécharge le JSON sur GitHub
     try {
-      const decoded   = atob(id);                                 // raw/ScanR/Cubari/refs/heads/main/BIBLIOMANIA.json
-      const filename  = decoded.split("/").pop();                 // BIBLIOMANIA.json
-      const urlJSON   = `https://raw.githubusercontent.com/ScanR/Cubari/main/${filename}`;
+      const urlJSON   = `${CONFIG.CDN_URL}${allSerie[slug]}`;
       const response  = await fetch(urlJSON);
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       serie = await response.json();
-      localStorage.setItem(`serie-${id}`, JSON.stringify(serie));  // 24 h de cache suffisent amplement
+      localStorage.setItem(`serie-${slug}`, JSON.stringify(serie));  // 24 h de cache suffisent amplement
     } catch (err) {
       console.error(err);
       return showError("Impossible de charger la série.");
@@ -167,7 +192,7 @@ function buildPage(serie, base64Id) {
       `;
       card.addEventListener("click", ()=>{
         const safe = num.replaceAll(".","-");
-        window.open(`https://teamscanr.fr/read/gist/${base64Id}/${safe}/1/`,"_blank");
+        window.open(`/read/gist/${base64Id}/${safe}/1/`,"_blank");
       });
       listEl.appendChild(card);
     });
