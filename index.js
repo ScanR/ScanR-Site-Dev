@@ -130,7 +130,7 @@ function renderSeries(s) {
   const lastChapUrl = `${s.urlSerie}/${safeChap}/1/`;
 
   return `
-  <div class="series-card" onclick="window.open('${s.urlSerie}', '_blank')">
+  <div class="series-card" onclick="window.location.href='${s.slug}'">
     <div class="series-cover">
       <img src="${appendSeriesCover(s.cover)}" alt="${s.title} – Cover">
     </div>
@@ -171,11 +171,28 @@ function renderSeries(s) {
 
 
 async function fetchAllSeries() {
-  const res = await fetch('https://raw.githubusercontent.com/ScanR/Cubari/refs/heads/main/all_series.json');
+
+  const dev = await fetch("./config-dev.json");
+  if (dev.status === 404) {
+    CONFIG = await fetch("./config.json").then((res) => res.json());
+  } else {
+    CONFIG = await dev.json();
+  }
+  
+  const res = await fetch(`${CONFIG.URL_CDN}index.json`);
   if (!res.ok) {
     throw new Error(`Erreur HTTP ${res.status} en récupérant all_series.json`);
   }
-  return res.json(); // renvoie tableau d'objets, chacun avec .id et .urlSerie
+  const allSerie = await res.json(); // renvoie tableau d'objets, chacun avec .id et .urlSerie
+  console.log(allSerie)
+  const seriesPromises = Object.entries(allSerie).map(async ([slug,fileName]) => {
+      const serie = await fetch(`${CONFIG.URL_CDN}${fileName}`).then((r) => r.json());
+      const base64Url = btoa(`${CONFIG.URL_RAW_JSON_GITHUB}${fileName}`);
+      serie.urlSerie = `/read/gist/${base64Url}`;
+      serie.base64Url = base64Url;
+      return serie;
+  })
+    return Promise.all(seriesPromises);
 }
 
 // 2) À partir de ces séries, bâtir liste de chapitres et liste de séries
