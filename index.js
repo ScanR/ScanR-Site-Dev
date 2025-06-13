@@ -97,7 +97,7 @@ const maybeNewBadge = (lastUpdated) =>
 // Rendus HTML
 function renderChapter(c) {
   return `
-  <div class="chapter-card" onclick="window.open('${c.url}', '_blank')">
+  <a class="chapter-card" href='${c.url}'>
     <div class="chapter-cover">
       <img src="${appendChapterCover(c.serieCover)}" alt="${
     c.serieTitle
@@ -112,7 +112,7 @@ function renderChapter(c) {
         c.last_updated
       )}</div>
     </div>
-  </div>`;
+  </a>`;
 }
 
 function renderSeries(s) {
@@ -130,7 +130,7 @@ function renderSeries(s) {
   const lastChapUrl = `${s.urlSerie}/${safeChap}/1/`;
 
   return `
-  <div class="series-card" onclick="window.location.href='${s.slug}'">
+  <div class="series-card" >
     <div class="series-cover">
       <img src="${appendSeriesCover(s.cover)}" alt="${s.title} – Cover">
     </div>
@@ -166,6 +166,7 @@ function renderSeries(s) {
           : ""
       }
     </div>
+    <a class='series-redirect' href='${s.slug}'></a>
   </div>`;
 }
 

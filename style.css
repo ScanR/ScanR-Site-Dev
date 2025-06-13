@@ -320,7 +320,13 @@ section {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
+.series-redirect {
+  z-index: 1;
+  width: 100%;
+  margin-left: -100%;
+}
 .meta {
+  z-index: 2;
   font-size: 0.9rem;
   color: var(--clr-text-sub);
 }
