@@ -46,43 +46,21 @@ document.addEventListener("DOMContentLoaded", async () => {
   const slug = slugs[0];
   if (!slug) return showError("Paramètre « slug » manquant dans l’URL.");
 
-  const allSerieCached = localStorage.getItem("index.json");
   let allSerie;
-  if(allSerieCached) allSerie = JSON.parse(allSerieCached);
-  else {
-    try{
-      const response = await fetch(`${CONFIG.URL_CDN}index.json`);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      allSerie = await response.json();
-      localStorage.setItem("index.json", JSON.stringify(allSerie));
-    } catch(err) {
-      console.error(err);
-      return showError("Impossible de charger la série.");
-    }
-  } 
+  const responseAllSerie = await fetch(`${CONFIG.URL_CDN}index.json`);
+  if (!responseAllSerie.ok) throw new Error(`HTTP ${responseAllSerie.status}`);
+  allSerie = await responseAllSerie.json();
 
   if(!allSerie[slug]) {
     return document.location("/404");
   }
 
   let serie;
-  // a) si les données sont déjà présentes en cache (localStorage) :
-  const cached = localStorage.getItem(`serie-${slug}`);
-  if (cached) {
-    serie = JSON.parse(cached);
-  } else {
-    try {
-      const urlJSON   = `${CONFIG.URL_CDN}${allSerie[slug]}`;
-      const response  = await fetch(urlJSON);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      serie = await response.json();
-      localStorage.setItem(`serie-${slug}`, JSON.stringify(serie));  // 24 h de cache suffisent amplement
-    } catch (err) {
-      console.error(err);
-      return showError("Impossible de charger la série.");
-    }
-  }
-
+  const urlJSON   = `${CONFIG.URL_CDN}${allSerie[slug]}`;
+  const responseSerie  = await fetch(urlJSON);
+  if (!responseSerie.ok) throw new Error(`HTTP ${responseSerie.status}`);
+  serie = await responseSerie.json();
+  
   const id = btoa(`${CONFIG.URL_RAW_JSON_GITHUB}${allSerie[slug]}`);
 
   /* ---------------------------------------------------------------- 
