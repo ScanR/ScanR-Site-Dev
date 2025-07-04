@@ -259,6 +259,19 @@ section {
   border-radius: 999px;
   animation: pulse 1.6s infinite;
 }
+.multi-chapter {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #00000082;
+  border: 0.15rem solid var(--clr-accent);
+  color: #fff;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 999px;
+  animation: pulse 1.6s infinite;
+}
 @keyframes pulse {
   0%,
   100% {

@@ -94,6 +94,11 @@ const maybeNewBadge = (lastUpdated) =>
     ? '<span class="new-badge">NOUVEAU</span>'
     : "";
 
+const maybeMultiChapter = (latest) =>
+  latest
+    ? `<span class="multi-chapter">${latest.length+1} chapitres</span>`
+    : "";
+
 // Rendus HTML
 function renderChapter(c) {
   return `
@@ -102,12 +107,13 @@ function renderChapter(c) {
       <img src="${appendChapterCover(c.serieCover)}" alt="${
     c.serieTitle
   } – Cover">
+      ${maybeMultiChapter(c.latest)}
       ${maybeNewBadge(c.last_updated)}
     </div>
     <div class="chapter-info">
       <div class="manga-title">${c.serieTitle}</div>
-      <div class="chapter-title">${c.title}</div>
-      <div class="chapter-number">Chapitre ${c.chapter}</div>
+      ${!c.latest ? `<div class="chapter-title">${c.title}</div>` : ""}
+      <div class="chapter-number">Chapitre${c.latest ? `s ${c.chapter} - ${c.latest.at(0)}` : ` ${c.chapter}`}</div>
       <div class="chapter-time"><i class="fas fa-clock"></i> ${timeAgo(
         c.last_updated
       )}</div>
@@ -222,13 +228,38 @@ async function bootstrap() {
 
           // Génération de l'URL du chapitre
           const safeChap = chapNum.replaceAll('.', '-');
-          chapData.url = `${serie.urlSerie}/${safeChap}/1/`;
 
+          // Filter duplicate
+          chapData.os = serie.os;
+          chapData.url = `${serie.urlSerie}/${safeChap}/1/`;
+          chapData.idChest = Object.values(chapData.groups)[0].split("/").pop();
           return chapData;
         })
       )
       .sort((a, b) => b.last_updated - a.last_updated)
+      .reduce((acc,curr) => {
+        const foundChapter = acc.find(chapData => chapData.idChest == curr.idChest);
+        if(foundChapter){
+          if(!foundChapter.os && curr.os) {
+            acc.splice(acc.indexOf(foundChapter),1);
+            acc.push(curr);
+            return acc;
+          }
+        } 
+        const prev = acc.at(-1);
+        const isDuplicate = prev && prev.serieTitle === curr.serieTitle;
+        if(isDuplicate){
+          curr.latest = prev.latest ?? [];
+          curr.latest.push(prev.chapter);
+          acc.pop();
+        }
+        if(!foundChapter) {
+          acc.push(curr);
+        } 
+        return acc;
+      },[])
       .slice(0, 15);
+    console.log(allChapters);
 
     // Injection du carousel des chapitres
     const track = document.querySelector('.carousel-track');
