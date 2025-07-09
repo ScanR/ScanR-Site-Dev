@@ -99,6 +99,9 @@ const maybeMultiChapter = (latest) =>
     ? `<span class="multi-chapter">${latest.length+1} chapitres</span>`
     : "";
 
+const getChapitreNumber = (c) => 
+  c.os ? "One Shot" : `Chapitre${c.latest ? `s ${c.chapter} - ${c.latest.at(0)}` : ` ${c.chapter}`}`
+
 // Rendus HTML
 function renderChapter(c) {
   return `
@@ -112,8 +115,8 @@ function renderChapter(c) {
     </div>
     <div class="chapter-info">
       <div class="manga-title">${c.serieTitle}</div>
-      ${!c.latest ? `<div class="chapter-title">${c.title}</div>` : ""}
-      <div class="chapter-number">Chapitre${c.latest ? `s ${c.chapter} - ${c.latest.at(0)}` : ` ${c.chapter}`}</div>
+      <div class="chapter-title">${!c.latest ? c.title : "&nbsp;"}</div>
+      <div class="chapter-number">${getChapitreNumber(c)}</div>
       <div class="chapter-time"><i class="fas fa-clock"></i> ${timeAgo(
         c.last_updated
       )}</div>
