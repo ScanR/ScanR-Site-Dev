@@ -85,6 +85,18 @@ function timeAgo(ms) {
   return new Date(ms).toLocaleDateString("fr-FR");
 }
 
+const isMultiple = (val) =>
+  Array.isArray(val)
+    ? val.length > 1
+    : typeof val === "string" && /,|&| et | and |\/|\//i.test(val);
+
+const joinVal = (val) => (Array.isArray(val) ? val.join(", ") : val);
+
+const formatCredit = (val, sing, plur) =>
+  val
+    ? `<li><strong>${isMultiple(val) ? plur : sing} :</strong> ${joinVal(val)}</li>`
+    : "";
+
 function buildPage(serie, base64Id) {
   const main = document.getElementById("serie-page");
   main.innerHTML = ""; // vide l’ancien contenu
@@ -101,9 +113,9 @@ function buildPage(serie, base64Id) {
       <img src="${serie.cover}" alt="Couverture de ${serie.title}">
     </div>
     <ul class="meta-list">
-      ${serie.author   ? `<li><strong>Auteur :</strong> ${serie.author}</li>`   : ""}
+      ${formatCredit(serie.author, 'Auteur', 'Auteurs')}
       ${serie.artist && serie.artist!==serie.author
-                     ? `<li><strong>Artiste :</strong> ${serie.artist}</li>` : ""}
+                     ? formatCredit(serie.artist, 'Artiste', 'Artistes') : ""}
       ${serie.year     ? `<li><strong>Année :</strong> ${serie.year}</li>`     : ""}
       <li><strong>Statut :</strong> ${serie.completed ? "Terminé" : "En cours"}</li>
     </ul>
