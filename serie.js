@@ -83,6 +83,18 @@ function timeAgo(ms) {
   return new Date(ms).toLocaleDateString("fr-FR");
 }
 
+const isMultiple = (val) =>
+  Array.isArray(val)
+    ? val.length > 1
+    : typeof val === "string" && /,|&| et | and |\/|\//i.test(val);
+
+const joinVal = (val) => (Array.isArray(val) ? val.join(", ") : val);
+
+const formatCredit = (val, sing, plur) =>
+  val
+    ? `<span><strong>${isMultiple(val) ? plur : sing} :</strong> ${joinVal(val)}</span>`
+    : "";
+
 function buildPage(serie) {
   const main = document.getElementById("serie-page");
   main.innerHTML = ""; // vide l’ancien contenu
@@ -98,13 +110,15 @@ function buildPage(serie) {
     <div class="cover">
       <img src="${serie.cover}" alt="Couverture de ${serie.title}">
     </div>
+
     <div class="meta-list">
-      ${serie.author  ? `<span><strong>Auteur :</strong> ${serie.author}</span>`   : ""}
-      ${serie.artist && serie.artist!==serie.author 
-                      ? `<span><strong>Artiste :</strong> ${serie.artist}</span>` : ""}
+      ${formatCredit(serie.author, 'Auteur', 'Auteurs')}
+      ${serie.artist && serie.artist!==serie.author
+                     ? formatCredit(serie.artist, 'Artiste', 'Artistes') : ""}
       ${serie.year    ? `<span><strong>Année :</strong> ${serie.year}</span>`     : ""}
       <span><strong>Statut :</strong> ${serie.completed ? "Terminé" : "En cours"}</span>
     </div>
+
     ${Array.isArray(serie.tags)
       ? `<div class="tags">${serie.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>`
       : ""}

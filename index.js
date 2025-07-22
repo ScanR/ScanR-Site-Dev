@@ -99,8 +99,21 @@ const maybeMultiChapter = (latest) =>
     ? `<span class="multi-chapter">${latest.length+1} chapitres</span>`
     : "";
 
-const getChapitreNumber = (c) => 
+const getChapitreNumber = (c) =>
   c.os ? "One Shot" : `Chapitre${c.latest ? `s ${c.chapter} - ${c.latest.at(0)}` : ` ${c.chapter}`}`
+
+// Helpers for credits labels
+const isMultiple = (val) =>
+  Array.isArray(val)
+    ? val.length > 1
+    : typeof val === "string" && /,|&| et | and |\/|\//i.test(val);
+
+const joinVal = (val) => (Array.isArray(val) ? val.join(", ") : val);
+
+const formatCredit = (val, sing, plur) =>
+  val
+    ? `<div class="meta"><strong>${isMultiple(val) ? plur : sing} :</strong> ${joinVal(val)}</div>`
+    : "";
 
 // Rendus HTML
 function renderChapter(c) {
@@ -147,11 +160,9 @@ function renderSeries(s) {
       <div class="series-title">${s.title}</div>
       ${s.year    ? `<div class="meta">Année : ${s.year}</div>`   : ""}
       ${s.status  ? `<div class="meta">Statut : ${s.status}</div>` : ""}
-      ${s.author  
-        ? `<div class="meta"><strong>Auteur :</strong> ${s.author}</div>`
-        : ""}
+      ${formatCredit(s.author, 'Auteur', 'Auteurs')}
       ${s.artist && s.artist !== s.author
-        ? `<div class="meta"><strong>Artiste :</strong> ${s.artist}</div>`
+        ? formatCredit(s.artist, 'Artiste', 'Artistes')
         : ""}
       ${Array.isArray(s.tags)
         ? `
