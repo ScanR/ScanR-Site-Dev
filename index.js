@@ -197,9 +197,7 @@ async function fetchAllSeries() {
   console.log(allSerie)
   const seriesPromises = Object.entries(allSerie).map(async ([slug,fileName]) => {
       const serie = await fetch(`${CONFIG.URL_CDN}${fileName}`).then((r) => r.json());
-      const base64Url = btoa(`${CONFIG.URL_RAW_JSON_GITHUB}${fileName}`);
-      serie.urlSerie = `/read/gist/${base64Url}`;
-      serie.base64Url = base64Url;
+      serie.urlSerie = `/${slug}`;
       return serie;
   })
     return Promise.all(seriesPromises);
