@@ -860,10 +860,17 @@ section {
   background: hsl(from var(--clr-text-sub) h s calc(l - 20));
 }
 .button-disabled {
-  background: hsl(from var(--clr-text-sub) h s calc(l - 50  ));
+  background: hsl(from var(--clr-text-sub) h s calc(l - 10 ));
   color: var(--clr-text-sub);
 }
 .button-disabled:hover {
-  background: hsl(from var(--clr-text-sub) h s calc(l - 50));
+  background: hsl(from var(--clr-text-sub) h s calc(l - 10 ));    
   cursor: not-allowed;
+}
+body.dark .button-disabled {
+  background: hsl(from var(--clr-text-sub) h s calc(l - 50  ));
+  color: hsl(from var(--clr-text-sub) h s calc(l - 30 ));
+}
+body.dark .button-disabled:hover {
+  background: hsl(from var(--clr-text-sub) h s calc(l - 50));
 }

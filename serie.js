@@ -133,8 +133,8 @@ function buildPage(serie) {
       <p class="synopsis">${serie.description||"Pas de synopsis."}</p>
     </div>
     <div class="serie-button">
-      <a id="commencer" type="button" class="button"><i class="fa-solid fa-play"></i> Commencer</a>
-      <a type="button" class="button button-disabled"><i class="fa-solid fa-circle-play"></i> Continuer</a>
+      <a id="commencer" class="button"><i class="fa-solid fa-play"></i> Commencer</a>
+      <a class="button button-disabled"><i class="fa-solid fa-circle-play"></i> Continuer</a>
     </div>
     <div class="chapters-section">
       <div class="chapters-header">
