@@ -1,6 +1,7 @@
 let CONFIG;
 
 let direction = true; // true = droite defaut
+let inversion = false;
 let webtoon = false;
 let double = false;
 let offset = false; 
@@ -20,7 +21,7 @@ const init = async () => {
     CONFIG = await dev.json();
   }
 
-  const proxyCubari = "/proxy/api/imgchest/chapter/md7ownrd94p";
+  const proxyCubari = "/proxy/api/imgchest/chapter/9rydmwp6wyk";
   const urlChapter = `${CONFIG.URL_API_IMGCHEST}?id=${proxyCubari.split('/').pop()}` 
 
   chapitres = await fetch(urlChapter)
@@ -76,7 +77,13 @@ const init = async () => {
         break;    
       case "w" :
         toggleWebtoon();
-        break
+        break;
+      case "s" :
+        toggleSens()
+        break;
+      case "i" :
+        toggleInversion()
+        break;
     }
   })
 }
@@ -114,7 +121,23 @@ const toggleWebtoon = () => {
     lecteurDiv.classList.remove("lecteur-webtoon");
     showPage();
   }
+}
 
+const toggleSens = () => {
+  direction = !direction;
+  toggleInversion();
+  toggleOffset();
+}
+
+const toggleInversion = () => {
+  if(webtoon) return;
+  const lecteurDiv = document.querySelector("#lecteur");
+  inversion = !inversion;
+  if(inversion) {
+    lecteurDiv.classList.add("lecteur-inversion");
+  } else {
+    lecteurDiv.classList.remove("lecteur-inversion");
+  }
 }
 
 

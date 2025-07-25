@@ -37,6 +37,10 @@ body {
   display: none;
 }
 
+.lecteur-inversion {
+  flex-direction: row-reverse;
+}
+
 .lecteur-webtoon {
   flex-direction: column;
   justify-content: left;
