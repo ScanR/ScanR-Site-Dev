@@ -1,0 +1,14 @@
+{
+  "name": "ScanR-Site",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "dev": "npx wrangler static/pages dev ."
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://seanr-scanr@github.com/ScanR/ScanR-Site-Dev.git"
+  },
+  "private": true
+}

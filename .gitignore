@@ -1,2 +1,5 @@
-config-dev.json
+static/config-dev.json
 CNAME
+/.wrangler
+/.idea
+/node_modules
