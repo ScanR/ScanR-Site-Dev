@@ -46,49 +46,25 @@ document.addEventListener("DOMContentLoaded", async () => {
   const slug = slugs[0];
   if (!slug) return showError("Paramètre « slug » manquant dans l’URL.");
 
-  const allSerieCached = localStorage.getItem("index.json");
   let allSerie;
-  if(allSerieCached) allSerie = JSON.parse(allSerieCached);
-  else {
-    try{
-      const response = await fetch(`${CONFIG.URL_CDN}index.json`);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      allSerie = await response.json();
-      localStorage.setItem("index.json", JSON.stringify(allSerie));
-    } catch(err) {
-      console.error(err);
-      return showError("Impossible de charger la série.");
-    }
-  } 
+  const responseAllSerie = await fetch(`${CONFIG.URL_CDN}index.json`);
+  if (!responseAllSerie.ok) throw new Error(`HTTP ${responseAllSerie.status}`);
+  allSerie = await responseAllSerie.json();
 
   if(!allSerie[slug]) {
     return document.location("/404");
   }
 
   let serie;
-  // a) si les données sont déjà présentes en cache (localStorage) :
-  const cached = localStorage.getItem(`serie-${slug}`);
-  if (cached) {
-    serie = JSON.parse(cached);
-  } else {
-    try {
-      const urlJSON   = `${CONFIG.URL_CDN}${allSerie[slug]}`;
-      const response  = await fetch(urlJSON);
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-      serie = await response.json();
-      localStorage.setItem(`serie-${slug}`, JSON.stringify(serie));  // 24 h de cache suffisent amplement
-    } catch (err) {
-      console.error(err);
-      return showError("Impossible de charger la série.");
-    }
-  }
-
-  const id = btoa(`${CONFIG.URL_RAW_JSON_GITHUB}${allSerie[slug]}`);
-
+  const urlJSON   = `${CONFIG.URL_CDN}${allSerie[slug]}`;
+  const responseSerie  = await fetch(urlJSON);
+  if (!responseSerie.ok) throw new Error(`HTTP ${responseSerie.status}`);
+  serie = await responseSerie.json();
+  
   /* ---------------------------------------------------------------- 
    * 3. Affichage
    * ---------------------------------------------------------------- */
-  buildPage(serie, id);
+  buildPage(serie);
 });
 
 /* ===== Fonctions utilitaires ===================================== */
@@ -107,7 +83,19 @@ function timeAgo(ms) {
   return new Date(ms).toLocaleDateString("fr-FR");
 }
 
-function buildPage(serie, base64Id) {
+const isMultiple = (val) =>
+  Array.isArray(val)
+    ? val.length > 1
+    : typeof val === "string" && /,|&| et | and |\/|\//i.test(val);
+
+const joinVal = (val) => (Array.isArray(val) ? val.join(", ") : val);
+
+const formatCredit = (val, sing, plur) =>
+  val
+    ? `<span><strong>${isMultiple(val) ? plur : sing} :</strong> ${joinVal(val)}</span>`
+    : "";
+
+function buildPage(serie) {
   const main = document.getElementById("serie-page");
   main.innerHTML = ""; // vide l’ancien contenu
 
@@ -122,13 +110,15 @@ function buildPage(serie, base64Id) {
     <div class="cover">
       <img src="${serie.cover}" alt="Couverture de ${serie.title}">
     </div>
-    <ul class="meta-list">
-      ${serie.author   ? `<li><strong>Auteur :</strong> ${serie.author}</li>`   : ""}
+
+    <div class="meta-list">
+      ${formatCredit(serie.author, 'Auteur', 'Auteurs')}
       ${serie.artist && serie.artist!==serie.author
-                     ? `<li><strong>Artiste :</strong> ${serie.artist}</li>` : ""}
-      ${serie.year     ? `<li><strong>Année :</strong> ${serie.year}</li>`     : ""}
-      <li><strong>Statut :</strong> ${serie.completed ? "Terminé" : "En cours"}</li>
-    </ul>
+                     ? formatCredit(serie.artist, 'Artiste', 'Artistes') : ""}
+      ${serie.year    ? `<span><strong>Année :</strong> ${serie.year}</span>`     : ""}
+      <span><strong>Statut :</strong> ${serie.completed ? "Terminé" : "En cours"}</span>
+    </div>
+
     ${Array.isArray(serie.tags)
       ? `<div class="tags">${serie.tags.map(t=>`<span class="tag">${t}</span>`).join("")}</div>`
       : ""}
@@ -138,12 +128,15 @@ function buildPage(serie, base64Id) {
   const content = document.createElement("div");
   content.className = "serie-content";
   content.innerHTML = `
-    <header class="serie-header">
+    <div class="serie-header">
       <h1 class="section-title">${serie.title}</h1>
       <p class="synopsis">${serie.description||"Pas de synopsis."}</p>
-    </header>
-
-    <section class="chapters-section">
+    </div>
+    <div class="serie-button">
+      <a id="commencer" class="button"><i class="fa-solid fa-play"></i> Commencer</a>
+      <a class="button button-disabled"><i class="fa-solid fa-circle-play"></i> Continuer</a>
+    </div>
+    <div class="chapters-section">
       <div class="chapters-header">
         <h2 class="section-title">Chapitres</h2>
         <button id="toggle-order" class="toggle-order" aria-label="Trier">
@@ -151,7 +144,7 @@ function buildPage(serie, base64Id) {
         </button>
       </div>
       <div class="chapters-list"></div>
-    </section>
+    </div>
   `;
 
 
@@ -160,8 +153,8 @@ function buildPage(serie, base64Id) {
   main.appendChild(container);
 
   // 4) Préparez vos données + état de tri
-  const chaptersArray = Object.entries(serie.chapters);
-  let ascending = true;
+  const chaptersArray = Object.entries(serie.chapters).map(e => ({num:e[0],data:e[1]}));
+  let ascending = false;
   const listEl   = content.querySelector(".chapters-list");
   const btnOrder = content.querySelector("#toggle-order");
 
@@ -171,19 +164,19 @@ function buildPage(serie, base64Id) {
     const sorted = chaptersArray
       .slice() // clone pour ne pas perturber l’original
       .sort((a,b) => ascending
-        ? parseFloat(a[0]) - parseFloat(b[0])
-        : parseFloat(b[0]) - parseFloat(a[0])
+        ? parseFloat(a.num) - parseFloat(b.num)
+        : parseFloat(b.num) - parseFloat(a.num)
       );
     // vide
     listEl.innerHTML = "";
     // génère
-    sorted.forEach(([num, data]) => {
+    sorted.forEach(({num, data}) => {
       const grp  = Object.keys(data.groups||{}).join(", ");
       const date = new Date(data.last_updated*1000)
         .toLocaleDateString("fr-FR", {day:"2-digit",month:"2-digit",year:"numeric"});
       const vol  = data.volume ? `<span class="c-vol">Tome ${data.volume}</span>` : "";
 
-      const card = document.createElement("div");
+      const card = document.createElement("a");
       card.className = "chapter-card-vertical";
       card.innerHTML = `
         <span class="c-num">Chap. ${num}</span>
@@ -192,21 +185,20 @@ function buildPage(serie, base64Id) {
         <span class="c-group">${grp}</span>
         <span class="c-date">${date}</span>
       `;
-      card.addEventListener("click", ()=>{
-        const safe = num.replaceAll(".","-");
-        window.open(`/read/gist/${base64Id}/${safe}/1/`,"_blank");
-      });
+      const safe = num.replaceAll(".","-");
+      card.setAttribute("href",`/${serie.slug}/${safe}/1/`);
       listEl.appendChild(card);
     });
   }
+  content.querySelector("#commencer").href = `/${serie.slug}/${Math.min(...chaptersArray.map(e => e.num))}` 
 
   // 6) Écouteur sur le bouton
     btnOrder.addEventListener("click", () => {
     ascending = !ascending;
     const icon = btnOrder.querySelector("i");
     icon.className = ascending
-        ? "fas fa-sort-numeric-up"
-        : "fas fa-sort-numeric-down";
+        ? "fas fa-sort-numeric-down"
+        : "fas fa-sort-numeric-up";
     renderChapters();
     });
 

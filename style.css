@@ -259,6 +259,19 @@ section {
   border-radius: 999px;
   animation: pulse 1.6s infinite;
 }
+.multi-chapter {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  background: #00000082;
+  border: 0.15rem solid var(--clr-accent);
+  color: #fff;
+  padding: 0.1rem 0.6rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 999px;
+  animation: pulse 1.6s infinite;
+}
 @keyframes pulse {
   0%,
   100% {
@@ -320,7 +333,13 @@ section {
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
 }
+.series-redirect {
+  z-index: 1;
+  width: 100%;
+  margin-left: -100%;
+}
 .meta {
+  z-index: 2;
   font-size: 0.9rem;
   color: var(--clr-text-sub);
 }
@@ -545,7 +564,6 @@ section {
   transition: opacity .6s ease, transform .6s ease;
 }
 .serie-aside {
-  position: sticky;
   top: 1.5rem;
   align-self: start;
 }
@@ -561,39 +579,32 @@ section {
   height: auto;
 }
 .meta-list {
-  list-style: none;
-  padding: 0;
+  background: var(--clr-bg-card);
+  padding: 0.3rem 0;
   margin: 0 0 1.5rem;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(140px,1fr));
-  gap: .75rem 1rem;
-}
-.meta-list li {
-  background: var(--clr-bg-card);
-  padding: .6rem .8rem;
-  border-radius: 8px;
-  font-size: .85rem;
-  color: var(--clr-text-sub);
   box-shadow: 0 8px 20px rgba(0,0,0,.05);
+  border-radius: 8px;
+}
+.meta-list span {
+  padding: .4rem .8rem;
+  font-size: 0.9rem;
+  color: var(--clr-text-sub);
   font-weight: 500;
+}
+
+.meta-list span strong {
+  color: var(--clr-primary);
 }
 
 .chapters-list {
   display: grid;
   grid-template-columns: 1fr;
   gap: 1rem;
-  max-height: 600px;
-  overflow-y: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
-.chapters-list::-webkit-scrollbar {
-  display: none;
-}
 
-.meta-list li strong {
-  color: var(--clr-primary);
-}
 .tags {
   display: flex;
   flex-wrap: wrap;
@@ -614,6 +625,8 @@ section {
   flex-direction: column;
   gap: 2rem;
 }
+
+
 .serie-header h1 {
   font-size: 2.4rem;
   margin-bottom: .6rem;
@@ -627,8 +640,16 @@ section {
   max-height: 180px;
   overflow-y: auto;
   padding-right: .5rem;
-  margin-bottom: 1.5rem;
   padding-top: 1rem;
+}
+
+.serie-button {
+  display: flex;
+  padding-top: 0.1rem;
+}
+
+.serie-button > a{
+  margin-right: 0.5rem;
 }
 
 /* === Chapitres horizontaux === */
@@ -751,11 +772,7 @@ section {
 .toggle-order:hover {
   background: var(--clr-accent);
   transform: scale(1.05);
-}
-.toggle-order:focus {
-  outline: 2px solid var(--clr-accent);
-  outline-offset: 2px;
-}
+} 
 
 /* ==== Volume dans la fiche chapitre ==== */
 .chapter-card-vertical {
@@ -780,6 +797,8 @@ section {
   box-shadow: 0 10px 24px rgba(0,0,0,.07);
   cursor: pointer;
   transition: transform .3s ease, box-shadow .3s ease;
+  text-decoration: none;
+  color: inherit;
 }
 
 .chapter-card-vertical .c-num,
@@ -804,6 +823,7 @@ section {
   font-weight: 600;
   color: var(--clr-text-sub);
   white-space: nowrap;
+  text-align: center;
 }
 
 /* Responsive : masque le volume si trop étroit */
@@ -813,4 +833,44 @@ section {
     grid-template-rows: repeat(3, auto);
   }
   .c-vol { display: none; }
+}
+
+.button {
+  background: var(--clr-primary);
+  width: fit-content;
+  border: none;
+  color: #fff;
+  padding: 0.5rem 0.90rem;
+  border-radius: 0.7rem;
+  font-size: 1.1rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  text-decoration: none;
+  transition: background 0.2s ease, transform 0.2s;
+}
+.button:hover {
+  background: var(--clr-accent);
+}
+.button-secondary {
+  background: var(--clr-text-sub);
+}
+.button-secondary:hover {
+  background: hsl(from var(--clr-text-sub) h s calc(l - 20));
+}
+.button-disabled {
+  background: hsl(from var(--clr-text-sub) h s calc(l - 10 ));
+  color: var(--clr-text-sub);
+}
+.button-disabled:hover {
+  background: hsl(from var(--clr-text-sub) h s calc(l - 10 ));    
+  cursor: not-allowed;
+}
+body.dark .button-disabled {
+  background: hsl(from var(--clr-text-sub) h s calc(l - 50  ));
+  color: hsl(from var(--clr-text-sub) h s calc(l - 30 ));
+}
+body.dark .button-disabled:hover {
+  background: hsl(from var(--clr-text-sub) h s calc(l - 50));
 }

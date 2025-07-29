@@ -94,25 +94,47 @@ const maybeNewBadge = (lastUpdated) =>
     ? '<span class="new-badge">NOUVEAU</span>'
     : "";
 
+const maybeMultiChapter = (latest) =>
+  latest
+    ? `<span class="multi-chapter">${latest.length+1} chapitres</span>`
+    : "";
+
+const getChapitreNumber = (c) =>
+  c.os ? "One Shot" : `Chapitre${c.latest ? `s ${c.chapter} - ${c.latest.at(0)}` : ` ${c.chapter}`}`
+
+// Helpers for credits labels
+const isMultiple = (val) =>
+  Array.isArray(val)
+    ? val.length > 1
+    : typeof val === "string" && /,|&| et | and |\/|\//i.test(val);
+
+const joinVal = (val) => (Array.isArray(val) ? val.join(", ") : val);
+
+const formatCredit = (val, sing, plur) =>
+  val
+    ? `<div class="meta"><strong>${isMultiple(val) ? plur : sing} :</strong> ${joinVal(val)}</div>`
+    : "";
+
 // Rendus HTML
 function renderChapter(c) {
   return `
-  <div class="chapter-card" onclick="window.open('${c.url}', '_blank')">
+  <a class="chapter-card" href='${c.url}'>
     <div class="chapter-cover">
       <img src="${appendChapterCover(c.serieCover)}" alt="${
     c.serieTitle
   } – Cover">
+      ${maybeMultiChapter(c.latest)}
       ${maybeNewBadge(c.last_updated)}
     </div>
     <div class="chapter-info">
       <div class="manga-title">${c.serieTitle}</div>
-      <div class="chapter-title">${c.title}</div>
-      <div class="chapter-number">Chapitre ${c.chapter}</div>
+      <div class="chapter-title">${!c.latest ? c.title : "&nbsp;"}</div>
+      <div class="chapter-number">${getChapitreNumber(c)}</div>
       <div class="chapter-time"><i class="fas fa-clock"></i> ${timeAgo(
         c.last_updated
       )}</div>
     </div>
-  </div>`;
+  </a>`;
 }
 
 function renderSeries(s) {
@@ -130,7 +152,7 @@ function renderSeries(s) {
   const lastChapUrl = `${s.urlSerie}/${safeChap}/1/`;
 
   return `
-  <div class="series-card" onclick="window.location.href='${s.slug}'">
+  <div class="series-card" >
     <div class="series-cover">
       <img src="${appendSeriesCover(s.cover)}" alt="${s.title} – Cover">
     </div>
@@ -138,11 +160,9 @@ function renderSeries(s) {
       <div class="series-title">${s.title}</div>
       ${s.year    ? `<div class="meta">Année : ${s.year}</div>`   : ""}
       ${s.status  ? `<div class="meta">Statut : ${s.status}</div>` : ""}
-      ${s.author  
-        ? `<div class="meta"><strong>Auteur :</strong> ${s.author}</div>`
-        : ""}
+      ${formatCredit(s.author, 'Auteur', 'Auteurs')}
       ${s.artist && s.artist !== s.author
-        ? `<div class="meta"><strong>Artiste :</strong> ${s.artist}</div>`
+        ? formatCredit(s.artist, 'Artiste', 'Artistes')
         : ""}
       ${Array.isArray(s.tags)
         ? `
@@ -166,6 +186,7 @@ function renderSeries(s) {
           : ""
       }
     </div>
+    <a class='series-redirect' href='${s.slug}'></a>
   </div>`;
 }
 
@@ -187,9 +208,7 @@ async function fetchAllSeries() {
   console.log(allSerie)
   const seriesPromises = Object.entries(allSerie).map(async ([slug,fileName]) => {
       const serie = await fetch(`${CONFIG.URL_CDN}${fileName}`).then((r) => r.json());
-      const base64Url = btoa(`${CONFIG.URL_RAW_JSON_GITHUB}${fileName}`);
-      serie.urlSerie = `/read/gist/${base64Url}`;
-      serie.base64Url = base64Url;
+      serie.urlSerie = `/${slug}`;
       return serie;
   })
     return Promise.all(seriesPromises);
@@ -221,13 +240,38 @@ async function bootstrap() {
 
           // Génération de l'URL du chapitre
           const safeChap = chapNum.replaceAll('.', '-');
-          chapData.url = `${serie.urlSerie}/${safeChap}/1/`;
 
+          // Filter duplicate
+          chapData.os = serie.os;
+          chapData.url = `${serie.urlSerie}/${safeChap}/1/`;
+          chapData.idChest = Object.values(chapData.groups)[0].split("/").pop();
           return chapData;
         })
       )
       .sort((a, b) => b.last_updated - a.last_updated)
+      .reduce((acc,curr) => {
+        const foundChapter = acc.find(chapData => chapData.idChest == curr.idChest);
+        if(foundChapter){
+          if(!foundChapter.os && curr.os) {
+            acc.splice(acc.indexOf(foundChapter),1);
+            acc.push(curr);
+            return acc;
+          }
+        } 
+        const prev = acc.at(-1);
+        const isDuplicate = prev && prev.serieTitle === curr.serieTitle;
+        if(isDuplicate){
+          curr.latest = prev.latest ?? [];
+          curr.latest.push(prev.chapter);
+          acc.pop();
+        }
+        if(!foundChapter) {
+          acc.push(curr);
+        } 
+        return acc;
+      },[])
       .slice(0, 15);
+    console.log(allChapters);
 
     // Injection du carousel des chapitres
     const track = document.querySelector('.carousel-track');
